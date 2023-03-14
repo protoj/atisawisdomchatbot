@@ -3,6 +3,7 @@ import { Document } from 'langchain/document';
 import { BaseDocumentLoader } from 'langchain/document_loaders';
 import type { DocumentLoader } from 'langchain/document_loaders';
 import { CheerioWebBaseLoader } from 'langchain/document_loaders';
+import axios from 'axios';
 
 export class CustomWebLoader
   extends BaseDocumentLoader
@@ -25,23 +26,24 @@ export class CustomWebLoader
 
   async load(): Promise<Document[]> {
     const $ = await this.scrape();
-    const title = $('h1.entry-title').text();
-    const date = $('meta[property="article:published_time"]').attr('content');
+    const title = $('h2').text();
+    //const date = $('meta[property="article:published_time"]').attr('content');
 
-    const content = $('.entry-content')
-      .clone()
-      .find('div.elementor, style')
-      .remove()
-      .end()
-      .text();
+    //Using cheerio to select all p tags that are child elements of divs and record the text content of each p tag in an array of strings called words 
+     
 
-    const cleanedContent = content.replace(/\s+/g, ' ').trim();
 
-    const contentLength = cleanedContent?.match(/\b\w+\b/g)?.length ?? 0;
+    const p = $('p');
+    const content = $('div p').text();
+      
 
-    const metadata = { source: this.webPath, title, date, contentLength };
+      const cleanedContent = content.replace(/\s+/g, ' ').trim();
 
-    return [new Document({ pageContent: cleanedContent, metadata })];
+      const contentLength = cleanedContent?.match(/\b\w+\b/g)?.length ?? 0;
+  
+      const metadata = { source: this.webPath, title, contentLength };
+  
+      return [new Document({ pageContent: cleanedContent, metadata })]; 
   }
 
   static async imports(): Promise<{

@@ -4,7 +4,7 @@ import { OpenAIEmbeddings } from 'langchain/embeddings';
 import { VectorDBQAChain } from 'langchain/chains';
 import { openai } from '@/utils/openai-client';
 
-const query = 'How do i create a notion database?';
+const query = 'What are the 3 capacities of practitioners?';
 
 const model = openai;
 
